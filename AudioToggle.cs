@@ -3,38 +3,41 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-[RequireComponent(typeof(Toggle))]
-public class AudioToggle : MonoBehaviour
+namespace Omnilatent.AudioUtils
 {
-    Toggle m_Slider;
-    [SerializeField] bool isControlSfx;
-    [SerializeField] bool isControlBgm;
-    bool saveOnChangeValue = true;
-
-    private void Awake()
+    [RequireComponent(typeof(Toggle))]
+    public class AudioToggle : MonoBehaviour
     {
-        m_Slider = GetComponent<Toggle>();
-        if (isControlSfx)
+        Toggle m_Slider;
+        [SerializeField] bool isControlSfx;
+        [SerializeField] bool isControlBgm;
+        bool saveOnChangeValue = true;
+
+        private void Awake()
         {
-            m_Slider.isOn = AudioManager.SfxVolume > 0f;
-            m_Slider.onValueChanged.AddListener(SetSfxValue);
+            m_Slider = GetComponent<Toggle>();
+            if (isControlSfx)
+            {
+                m_Slider.isOn = AudioManager.SfxVolume > 0f;
+                m_Slider.onValueChanged.AddListener(SetSfxValue);
+            }
+            if (isControlBgm)
+            {
+                m_Slider.isOn = AudioManager.BgmVolume > 0f;
+                m_Slider.onValueChanged.AddListener(SetBgmValue);
+            }
         }
-        if (isControlBgm)
+
+        public void SetSfxValue(bool value)
         {
-            m_Slider.isOn = AudioManager.BgmVolume > 0f;
-            m_Slider.onValueChanged.AddListener(SetBgmValue);
+            AudioManager.SfxVolume = value ? 1f : 0f;
+            if (saveOnChangeValue) AudioManager.Save();
         }
-    }
 
-    public void SetSfxValue(bool value)
-    {
-        AudioManager.SfxVolume = value ? 1f : 0f;
-        if (saveOnChangeValue) AudioManager.Save();
-    }
-
-    public void SetBgmValue(bool value)
-    {
-        AudioManager.BgmVolume = value ? 1f : 0f;
-        if (saveOnChangeValue) AudioManager.Save();
+        public void SetBgmValue(bool value)
+        {
+            AudioManager.BgmVolume = value ? 1f : 0f;
+            if (saveOnChangeValue) AudioManager.Save();
+        }
     }
 }

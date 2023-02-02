@@ -1,21 +1,24 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 
-public class ButtonAudio : MonoBehaviour
+namespace Omnilatent.AudioUtils
 {
-    [SerializeField] AudioClip buttonSound;
-
-    private void Start()
+    public class ButtonAudio : MonoBehaviour
     {
-        var button = GetComponent<Button>();
-        if (button != null) { button.onClick.AddListener(Play); }
-    }
+        [SerializeField] AudioClip buttonSound;
 
-    public void Play()
-    {
-        if (AudioManager.Instance != null)
+        private void Start()
         {
-            AudioManager.Instance.PlayButtonTapSfx();
+            var button = GetComponent<Button>();
+            if (button != null) { button.onClick.AddListener(Play); }
+        }
+
+        public void Play()
+        {
+            if (AudioManager.Instance != null)
+            {
+                AudioManager.Instance.PlayButtonTapSfx();
+            }
         }
     }
 }
