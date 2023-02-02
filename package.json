@@ -1,0 +1,16 @@
+{
+    "name": "com.omnilatent.audioutils",
+    "displayName": "Omni Audio Utils",
+    "version": "0.1.0",
+    "unity": "2018.1",
+    "description": "Manage Audio.",
+    "keywords": ["audio"],
+    "category": "Wrapper",
+    "dependencies": {
+    },
+    "author": {
+        "name": "Trong",
+        "email": "nguyentrong101094@gmail.com",
+        "url": "https://github.com/nguyentrong101094"
+  }
+}
