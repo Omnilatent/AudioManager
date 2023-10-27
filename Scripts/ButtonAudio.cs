@@ -15,9 +15,13 @@ namespace Omnilatent.AudioUtils
 
         public void Play()
         {
-            if (AudioManager.Instance != null)
+            if (buttonSound == null)
             {
                 AudioManager.Instance.PlayButtonTapSfx();
+            }
+            else
+            {
+                AudioManager.Instance.PlaySfx(buttonSound);
             }
         }
     }
