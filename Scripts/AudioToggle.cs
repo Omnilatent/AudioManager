@@ -30,13 +30,13 @@ namespace Omnilatent.AudioUtils
 
         public void SetSfxValue(bool value)
         {
-            AudioManager.SfxVolume = value ? 1f : 0f;
+            AudioManager.SfxVolume = value ? AudioManager.DefaultSfxVolume : 0f;
             if (saveOnChangeValue) AudioManager.Save();
         }
 
         public void SetBgmValue(bool value)
         {
-            AudioManager.BgmVolume = value ? 1f : 0f;
+            AudioManager.BgmVolume = value ? AudioManager.DefaultBgmVolume : 0f;
             if (saveOnChangeValue) AudioManager.Save();
         }
     }
