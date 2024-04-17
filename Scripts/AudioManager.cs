@@ -244,8 +244,8 @@ namespace Omnilatent.AudioUtils
 
         public void PlayBgm(string audioName, float volumeScale = 1f)
         {
-            //bgmVolumeScale = volumeScale;
-            //m_BgmSource.volume = BgmVolume * DefaultBgmVolumeScale * bgmVolumeScale;
+            // bgmVolumeScale = volumeScale;
+            // m_BgmSource.volume = BgmVolume * DefaultBgmVolumeScale * bgmVolumeScale;
 
             bool currentClipNull = (m_BgmSource.clip == null);
             bool sameCurrentClip = (!currentClipNull && m_BgmSource.clip.name == audioName);
@@ -264,7 +264,7 @@ namespace Omnilatent.AudioUtils
                     StopBgm(true);
                 }
                 var clip = Resources.Load<AudioClip>(System.IO.Path.Combine(m_BgmPath, audioName));
-                PlayBgm(clip);
+                PlayBgm(clip, volumeScale);
             }
         }
 
