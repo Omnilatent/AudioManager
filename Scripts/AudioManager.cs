@@ -136,6 +136,8 @@ namespace Omnilatent.AudioUtils
             get { return m_VoiceSource; }
         }
 
+        private Coroutine _fadeBgmCoroutine;
+
         public void PlayButtonTapSfx()
         {
             PlaySfx(m_ButtonTapSfx);
@@ -219,7 +221,7 @@ namespace Omnilatent.AudioUtils
         public void PlayBgm(AudioClip clip, float volumeScale = 1f)
         {
             bgmVolumeScale = volumeScale;
-            m_BgmSource.volume = BgmVolume * DefaultBgmVolumeScale * bgmVolumeScale;
+            m_BgmSource.volume = GetTargetBgmVolume();
             string audioName = clip.name;
             bool currentClipNull = (m_BgmSource.clip == null);
             bool sameCurrentClip = (!currentClipNull && m_BgmSource.clip.name == audioName);
@@ -240,6 +242,11 @@ namespace Omnilatent.AudioUtils
                 m_BgmSource.clip = clip;
                 m_BgmSource.Play();
             }
+        }
+
+        float GetTargetBgmVolume()
+        {
+            return BgmVolume * DefaultBgmVolumeScale * bgmVolumeScale;
         }
 
         public void PlayBgm(string audioName, float volumeScale = 1f)
@@ -361,11 +368,64 @@ namespace Omnilatent.AudioUtils
             m_AudioDict.Clear();
         }
 
-        public void Fadeout()
+        /// <summary>
+        /// Fade out current BGM if a BGM is playing, then fade in the next BGM
+        /// </summary>
+        public void FadeInBgm(AudioClip nextClip, float fadeDuration = 1f, float volumeScale = 1f)
         {
-
+            if (_fadeBgmCoroutine != null)
+                StopCoroutine(_fadeBgmCoroutine); // In case a fade is already running
+            _fadeBgmCoroutine = StartCoroutine(CrossfadeBgm(nextClip, fadeDuration, volumeScale));
         }
 
+        IEnumerator CrossfadeBgm(AudioClip nextClip, float duration, float volumeScale)
+        {
+            float halfDuration = duration * 0.5f;
+            float startVolume = m_BgmSource.volume;
+
+            float elapsed = 0f;
+            if (m_BgmSource.isPlaying)
+            {
+                // Fade out current music
+                while (elapsed < halfDuration)
+                {
+                    elapsed += Time.unscaledDeltaTime;
+                    float t = elapsed / halfDuration;
+                    m_BgmSource.volume = Mathf.Lerp(startVolume, 0f, t);
+                    yield return null;
+                }
+
+                m_BgmSource.Stop();
+            }
+
+            if (nextClip == null)
+            {
+                m_BgmSource.volume = GetTargetBgmVolume();
+                yield break;
+            }
+
+            m_BgmSource.clip = nextClip;
+            m_BgmSource.Play();
+
+            // Fade in new music
+            float targetVolume = GetTargetBgmVolume();
+            elapsed = 0f;
+            while (elapsed < halfDuration)
+            {
+                elapsed += Time.unscaledDeltaTime;
+                float t = elapsed / halfDuration;
+                m_BgmSource.volume = Mathf.Lerp(0f, targetVolume, t);
+                yield return null;
+            }
+
+            m_BgmSource.volume = targetVolume;
+        }
+
+        public void FadeOutBgm(float fadeDuration = 1f)
+        {
+            FadeInBgm(null, fadeDuration: fadeDuration);
+        }
+        
         static float PercentToMixerVolume(float soundLevel)
         {
             float val = Mathf.Log(Mathf.Max(0.001f, soundLevel)) * 20;
