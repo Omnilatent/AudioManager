@@ -387,6 +387,8 @@ namespace Omnilatent.AudioUtils
 
             if (_fadeBgmCoroutine != null)
                 StopCoroutine(_fadeBgmCoroutine); // In case a fade is already running
+            
+            bgmVolumeScale = volumeScale;
             _fadeBgmCoroutine = StartCoroutine(CrossfadeBgm(nextClip, fadeDuration, volumeScale));
         }
 
