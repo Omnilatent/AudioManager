@@ -270,7 +270,7 @@ namespace Omnilatent.AudioUtils
                 {
                     StopBgm(true);
                 }
-                var clip = Resources.Load<AudioClip>(System.IO.Path.Combine(m_BgmPath, audioName));
+                var clip = LoadBgmResource(audioName);
                 PlayBgm(clip, volumeScale);
             }
         }
@@ -368,16 +368,40 @@ namespace Omnilatent.AudioUtils
             m_AudioDict.Clear();
         }
 
+        public AudioClip LoadBgmResource(string audioName)
+        {
+            return Resources.Load<AudioClip>(System.IO.Path.Combine(m_BgmPath, audioName));
+        }
+
         /// <summary>
         /// Fade out current BGM if a BGM is playing, then fade in the next BGM
         /// </summary>
         public void FadeInBgm(AudioClip nextClip, float fadeDuration = 1f, float volumeScale = 1f)
         {
+            bool currentClipNull = (m_BgmSource.clip == null);
+            bool sameCurrentClip = (!currentClipNull && m_BgmSource.clip == nextClip);
+            if (sameCurrentClip)
+            {
+                return;
+            }
+
             if (_fadeBgmCoroutine != null)
                 StopCoroutine(_fadeBgmCoroutine); // In case a fade is already running
             _fadeBgmCoroutine = StartCoroutine(CrossfadeBgm(nextClip, fadeDuration, volumeScale));
         }
 
+        /// <summary>
+        /// Fade out current BGM if a BGM is playing, then fade in the next BGM
+        /// </summary>
+        public void FadeInBgm(string nextClip, float fadeDuration = 1f, float volumeScale = 1f)
+        {
+            if (_fadeBgmCoroutine != null)
+                StopCoroutine(_fadeBgmCoroutine); // In case a fade is already running
+            
+            var clip = LoadBgmResource(nextClip);
+            FadeInBgm(clip, fadeDuration, volumeScale);
+        }
+        
         IEnumerator CrossfadeBgm(AudioClip nextClip, float duration, float volumeScale)
         {
             float halfDuration = duration * 0.5f;
@@ -423,7 +447,7 @@ namespace Omnilatent.AudioUtils
 
         public void FadeOutBgm(float fadeDuration = 1f)
         {
-            FadeInBgm(null, fadeDuration: fadeDuration);
+            FadeInBgm((AudioClip)null, fadeDuration: fadeDuration);
         }
         
         static float PercentToMixerVolume(float soundLevel)
