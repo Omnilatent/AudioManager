@@ -39,7 +39,7 @@ namespace Omnilatent.AudioUtils
             {
                 bgmVolume = value;
                 Instance.m_BgmSource.volume = bgmVolume * DefaultBgmVolumeScale * bgmVolumeScale;
-                Instance.m_AudioMixer.SetFloat("BGM", PercentToMixerVolume(bgmVolume));
+                Instance.m_AudioMixer.SetFloat(BgmMixerName, PercentToMixerVolume(bgmVolume));
             }
         }
 
@@ -59,7 +59,7 @@ namespace Omnilatent.AudioUtils
             set
             {
                 sfxVolume = value;
-                Instance.m_AudioMixer.SetFloat("SFX", PercentToMixerVolume(sfxVolume));
+                Instance.m_AudioMixer.SetFloat(SfxMixerName, PercentToMixerVolume(sfxVolume));
                 //AudioListener.volume = sfxVolume;
             }
         }
@@ -98,7 +98,10 @@ namespace Omnilatent.AudioUtils
         [SerializeField] AudioSource m_BgmSource;
         [SerializeField] AudioSource m_SfxSource;
         [SerializeField] AudioSource m_VoiceSource;
-
+        
+        public AudioMixer AudioMixer => m_AudioMixer;
+        private const string SfxMixerName = "SFX"; 
+        private const string BgmMixerName = "BGM"; 
         protected static AudioManager instance { get; set; }
         public static AudioManager Instance
         {
@@ -488,5 +491,8 @@ namespace Omnilatent.AudioUtils
                 SfxVolume = PlayerPrefs.GetFloat("SFX_VOLUME", DefaultSfxVolume);
             }
         }
+
+        public AudioMixerGroup GetSfxMixer() { return m_AudioMixer.FindMatchingGroups(SfxMixerName)[0]; }
+        public AudioMixerGroup GetBgmMixer() { return m_AudioMixer.FindMatchingGroups(BgmMixerName)[0]; }
     }
 }
